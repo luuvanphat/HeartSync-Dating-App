@@ -5,6 +5,8 @@ import {useStore} from '../store/useStore';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../types';
+import {useTheme} from '../theme/ThemeContext';
+import {useLanguage} from '../localization/LanguageContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -21,7 +23,18 @@ const EditProfileScreen = () => {
   const [interests, setInterests] = useState<string[]>(currentUser?.interests || []);
   const [newInterest, setNewInterest] = useState('');
   const [photos, setPhotos] = useState<string[]>(currentUser?.photos || []);
-
+  // 1. Add to useState declarations (after existing states):
+  const [name, setName] = useState(currentUser?.name || '');
+  const [age, setAge] = useState(currentUser?.age.toString() || '');
+  
+  // 2. Add to useStore calls (replace old line):
+  const profileCompletion = useStore((state) => state.profileCompletion);
+  const calculateProfileCompletion = useStore((state) => state.calculateProfileCompletion);
+  
+  // 3. Add useEffect to recalculate on mount:
+  useEffect(() => {
+    calculateProfileCompletion();
+  }, []);
   const handleAddPhoto = (index: number) => {
     Alert.alert(
       'Add Photo',
@@ -141,6 +154,25 @@ const EditProfileScreen = () => {
   };
 
   const handleSave = () => {
+    // Validate name
+    if (!name.trim() || name.trim().length < 2) {
+      Alert.alert('Invalid Name', 'Please enter a valid name (at least 2 characters)');
+      return;
+    }
+    
+    // Validate age
+    const ageNum = parseInt(age);
+    if (!ageNum || ageNum < 18 || ageNum > 100) {
+      Alert.alert('Invalid Age', 'Please enter a valid age between 18 and 100');
+      return;
+    }
+    
+    // Save
+    updateCurrentUser({
+      name: name.trim(),
+      age: ageNum,
+    });
+    
     saveProfile();
     Alert.alert('Success', 'Your profile has been updated!', [
       {text: 'OK', onPress: () => navigation.goBack()},
@@ -172,12 +204,17 @@ const EditProfileScreen = () => {
       </View>
 
       <ScrollView style={styles.content}>
-        <View style={styles.progressContainer}>
-          <Text style={styles.progressLabel}>Profile completion: 45%</Text>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, {width: '45%'}]} />
-          </View>
-        </View>
+      <View style={styles.progressContainer}>
+  <Text style={styles.progressLabel}>Profile completion: {profileCompletion}%</Text>
+  <View style={styles.progressBar}>
+    <View style={[styles.progressFill, {width: `${profileCompletion}%`}]} />
+  </View>
+  <Text style={styles.progressHint}>
+    {profileCompletion < 100 
+      ? `Complete ${100 - profileCompletion}% more to maximize your matches!` 
+      : '✨ Your profile is complete!'}
+  </Text>
+</View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Photos</Text>
@@ -219,7 +256,42 @@ const EditProfileScreen = () => {
             )}
           </View>
         </View>
-
+        <View style={styles.section}>
+  <Text style={styles.sectionTitle}>Basic Information</Text>
+  
+  <Text style={styles.fieldLabel}>Full Name *</Text>
+  <TextInput
+    style={styles.textInput}
+    value={name}
+    onChangeText={(text) => {
+      setName(text);
+      updateCurrentUser({name: text});
+    }}
+    placeholder="Enter your full name"
+  />
+  
+  <Text style={styles.fieldLabel}>Age *</Text>
+  <TextInput
+    style={styles.textInput}
+    value={age}
+    onChangeText={(text) => {
+      // Only allow numbers
+      if (/^\d*$/.test(text)) {
+        setAge(text);
+        const ageNum = parseInt(text);
+        if (ageNum >= 18 && ageNum <= 100) {
+          updateCurrentUser({age: ageNum});
+        }
+      }
+    }}
+    placeholder="Enter your age"
+    keyboardType="numeric"
+    maxLength={3}
+  />
+  {age && (parseInt(age) < 18 || parseInt(age) > 100) && (
+    <Text style={styles.errorText}>Age must be between 18 and 100</Text>
+  )}
+</View>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>About me</Text>
           <Text style={styles.sectionSubtitle}>
@@ -474,6 +546,24 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     gap: 8,
+  },
+  fieldLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
+    marginTop: 12,
+  },
+  progressHint: {
+    fontSize: 12,
+    color: '#00BCD4',
+    marginTop: 4,
+    fontStyle: 'italic',
+  },
+  errorText: {
+    fontSize: 12,
+    color: '#FF3B30',
+    marginTop: 4,
   },
   interestText: {
     fontSize: 14,

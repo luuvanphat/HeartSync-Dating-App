@@ -5,21 +5,23 @@ import {useStore} from '../store/useStore';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList, Match} from '../types';
+import {useTheme} from '../theme/ThemeContext';
+import {useLanguage} from '../localization/LanguageContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const MatchesScreen = () => {
   const navigation = useNavigation<NavigationProp>();
+  const {theme} = useTheme();
+  const {t} = useLanguage();
   const matches = useStore((state) => state.matches);
   const [searchQuery, setSearchQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Filter matches based on search
   const filteredMatches = matches.filter(match =>
     match.user.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Separate chats with messages
   const chatsWithMessages = filteredMatches.filter(m => m.lastMessage);
 
   const renderMatchItem = ({item}: {item: Match}) => (
@@ -30,7 +32,7 @@ const MatchesScreen = () => {
         <Image source={{uri: item.user.photos[0]}} style={styles.matchImage} />
         {item.user.isOnline && <View style={styles.onlineDot} />}
       </View>
-      <Text style={styles.matchName}>{item.user.name.split(' ')[0]}</Text>
+      <Text style={[styles.matchName, {color: theme.colors.text}]}>{item.user.name.split(' ')[0]}</Text>
     </TouchableOpacity>
   );
 
@@ -39,7 +41,7 @@ const MatchesScreen = () => {
 
     return (
       <TouchableOpacity
-        style={styles.chatItem}
+        style={[styles.chatItem, {backgroundColor: theme.colors.card}]}
         onPress={() => navigation.navigate('ChatDetail', {matchId: item.id})}>
         <View style={styles.chatImageContainer}>
           <Image source={{uri: item.user.photos[0]}} style={styles.chatImage} />
@@ -51,18 +53,19 @@ const MatchesScreen = () => {
           )}
         </View>
         <View style={styles.chatInfo}>
-          <Text style={styles.chatName}>{item.user.name}</Text>
+          <Text style={[styles.chatName, {color: theme.colors.text}]}>{item.user.name}</Text>
           <Text style={[
             styles.chatMessage,
-            (item.unreadCount || 0) > 0 && styles.chatMessageUnread
+            {color: theme.colors.textSecondary},
+            (item.unreadCount || 0) > 0 && {fontWeight: '600', color: theme.colors.text}
           ]}>
-            {item.lastMessage ? `You: ${item.lastMessage.text}` : 'Say hi! 👋'}
+            {item.lastMessage ? `You: ${item.lastMessage.text}` : t('matches.sayHi')}
           </Text>
         </View>
         <View style={styles.chatRight}>
-          <Text style={styles.chatTime}>{timeAgo}h ago</Text>
+          <Text style={[styles.chatTime, {color: theme.colors.textSecondary}]}>{timeAgo}h ago</Text>
           {!item.lastMessage?.read && item.lastMessage?.senderId !== 'current-user' && (
-            <View style={styles.unreadIndicator} />
+            <View style={[styles.unreadIndicator, {backgroundColor: theme.colors.primary}]} />
           )}
         </View>
       </TouchableOpacity>
@@ -74,38 +77,40 @@ const MatchesScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+      <View style={[styles.header, {borderBottomColor: theme.colors.border}]}>
         <TouchableOpacity onPress={() => setMenuOpen(!menuOpen)}>
-          <Icon name="menu" size={28} color="#333" />
+          <Icon name="menu" size={28} color={theme.colors.text} />
         </TouchableOpacity>
-        <View style={styles.searchContainer}>
-          <Icon name="search" size={20} color="#999" />
+        <View style={[styles.searchContainer, {backgroundColor: theme.colors.card}]}>
+          <Icon name="search" size={20} color={theme.colors.textSecondary} />
           <TextInput
-            placeholder="Search matches"
-            style={styles.searchInput}
-            placeholderTextColor="#999"
+            placeholder={t('common.search')}
+            style={[styles.searchInput, {color: theme.colors.text}]}
+            placeholderTextColor={theme.colors.textSecondary}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity onPress={handleClearSearch}>
-              <Icon name="close-circle" size={20} color="#999" />
+              <Icon name="close-circle" size={20} color={theme.colors.textSecondary} />
             </TouchableOpacity>
           )}
         </View>
       </View>
 
       {searchQuery.length > 0 && (
-        <View style={styles.searchResults}>
-          <Text style={styles.searchResultText}>
-            Found {filteredMatches.length} match{filteredMatches.length !== 1 ? 'es' : ''}
+        <View style={[styles.searchResults, {backgroundColor: theme.colors.card}]}>
+          <Text style={[styles.searchResultText, {color: theme.colors.primary}]}>
+            {t('matches.found')} {filteredMatches.length} {filteredMatches.length !== 1 ? t('matches.matches') : t('matches.match')}
           </Text>
         </View>
       )}
 
-      <View style={styles.matchesSection}>
-        <Text style={styles.sectionTitle}>Matches ({filteredMatches.length})</Text>
+      <View style={[styles.matchesSection, {borderBottomColor: theme.colors.border}]}>
+        <Text style={[styles.sectionTitle, {color: theme.colors.text}]}>
+          {t('matches.title')} ({filteredMatches.length})
+        </Text>
         {filteredMatches.length > 0 ? (
           <FlatList
             horizontal
@@ -117,9 +122,9 @@ const MatchesScreen = () => {
           />
         ) : (
           <View style={styles.emptyState}>
-            <Icon name="heart-dislike" size={48} color="#ccc" />
-            <Text style={styles.emptyText}>
-              {searchQuery ? 'No matches found' : 'No matches yet'}
+            <Icon name="heart-dislike" size={48} color={theme.colors.disabled} />
+            <Text style={[styles.emptyText, {color: theme.colors.textSecondary}]}>
+              {searchQuery ? 'No matches found' : t('matches.noMatches')}
             </Text>
           </View>
         )}
@@ -127,9 +132,11 @@ const MatchesScreen = () => {
 
       <View style={styles.chatsSection}>
         <View style={styles.chatHeader}>
-          <Text style={styles.sectionTitle}>Chats ({chatsWithMessages.length})</Text>
+          <Text style={[styles.sectionTitle, {color: theme.colors.text}]}>
+            {t('matches.chats')} ({chatsWithMessages.length})
+          </Text>
           <TouchableOpacity onPress={() => navigation.navigate('Filters')}>
-            <Icon name="options-outline" size={24} color="#333" />
+            <Icon name="options-outline" size={24} color={theme.colors.text} />
           </TouchableOpacity>
         </View>
         {chatsWithMessages.length > 0 ? (
@@ -141,9 +148,9 @@ const MatchesScreen = () => {
           />
         ) : (
           <View style={styles.emptyState}>
-            <Icon name="chatbubbles-outline" size={48} color="#ccc" />
-            <Text style={styles.emptyText}>
-              {searchQuery ? 'No chats found' : 'Start a conversation!'}
+            <Icon name="chatbubbles-outline" size={48} color={theme.colors.disabled} />
+            <Text style={[styles.emptyText, {color: theme.colors.textSecondary}]}>
+              {searchQuery ? 'No chats found' : t('matches.noChats')}
             </Text>
           </View>
         )}

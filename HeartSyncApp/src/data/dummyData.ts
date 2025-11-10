@@ -2,15 +2,19 @@ import {User, Match, Message} from '../types';
 
 export const CURRENT_USER: User = {
   id: 'current-user',
-  name: 'Joshua Edwards',
-  age: 29,
+  name: 'Lưu Văn Phát',
+  age: 21,
   bio: 'Love exploring new places and meeting interesting people. Coffee enthusiast ☕',
   occupation: 'Software Engineer',
-  location: 'Las Vegas, NV 89104',
+  location: 'Hồ Chí Minh City, NV 89104',
   distance: 0,
   photos: [
     'https://randomuser.me/api/portraits/men/32.jpg',
     'https://randomuser.me/api/portraits/men/33.jpg',
+    'https://randomuser.me/api/portraits/men/34.jpg',
+    'https://randomuser.me/api/portraits/men/35.jpg',
+    'https://randomuser.me/api/portraits/men/36.jpg',
+    'https://randomuser.me/api/portraits/men/37.jpg',
   ],
   interests: ['Coffee', 'Travel', 'Coding', 'Music'],
   languages: ['English', 'Spanish'],
@@ -25,11 +29,12 @@ export const CURRENT_USER: User = {
 };
 
 export const DUMMY_USERS: User[] = [
+  // ========== FEMALE USERS ==========
   {
     id: '1',
     name: 'Ava Jones',
     age: 25,
-    bio: 'It would be wonderful to meet someone who appreciates the arts and enjoys exploring the vibrant culture of the city. I value open-mindedness, good communication, and a shared passion for classical music and fine arts. Also, mother of 2 cute :)',
+    bio: 'It would be wonderful to meet someone who appreciates the arts.',
     occupation: 'Business Analyst at Tech',
     location: 'Las Vegas, NV 89104',
     distance: 2.0,
@@ -38,16 +43,14 @@ export const DUMMY_USERS: User[] = [
       'https://randomuser.me/api/portraits/women/45.jpg',
       'https://randomuser.me/api/portraits/women/46.jpg',
     ],
-    interests: ['Classical Music & Art', 'Thriller Films', 'Nature', 'Biking', 'Asian Food', 'Mathematics & Technology'],
-    languages: ['English (Native)', 'Spanish (Fluent)', 'Tagalog (Verbal)', 'Mandarin Chinese (Verbal)'],
+    interests: ['Classical Music & Art', 'Nature', 'Biking', 'Asian Food'],
+    languages: ['English (Native)', 'Spanish (Fluent)'],
     details: {
       height: '5\'6" (168 cm)',
       smoking: 'Non-smoker',
       drinking: 'Cat lover',
       education: 'Master degree',
-      gender: 'Female',
-      zodiac: 'Virgo',
-      religion: 'No religious affiliation',
+      gender: 'Female', // ✅ ĐÚNG
     },
     verified: true,
     pronouns: 'she/her/hers',
@@ -57,7 +60,7 @@ export const DUMMY_USERS: User[] = [
     id: '2',
     name: 'Rachel Miller',
     age: 27,
-    bio: 'Freelance model and adventure seeker. Love sunset walks and good conversations.',
+    bio: 'Freelance model and adventure seeker.',
     occupation: 'Freelance model',
     location: 'Los Angeles, CA',
     distance: 5.2,
@@ -71,7 +74,7 @@ export const DUMMY_USERS: User[] = [
       height: '5\'8"',
       smoking: 'Non-smoker',
       drinking: 'Occasionally',
-      gender: 'Female',
+      gender: 'Female', // ✅ ĐÚNG
     },
     verified: true,
     pronouns: 'she/her/hers',
@@ -96,58 +99,89 @@ export const DUMMY_USERS: User[] = [
       smoking: 'Non-smoker',
       drinking: 'Socially',
       pets: 'Dog lover',
-      gender: 'Female',
+      gender: 'Female', // ✅ ĐÚNG
     },
     verified: false,
     isOnline: true,
   },
+  
+  // ========== MALE USERS ==========
   {
-    id: '4',
-    name: 'Anna Fernandez',
-    age: 26,
-    bio: 'Artist and musician. Looking for someone who appreciates creativity.',
-    occupation: 'Graphic Designer',
-    location: 'Henderson, NV',
-    distance: 8.3,
-    photos: [
-      'https://randomuser.me/api/portraits/women/20.jpg',
-      'https://randomuser.me/api/portraits/women/21.jpg',
-    ],
-    interests: ['Art', 'Music', 'Coffee', 'Design'],
-    languages: ['English', 'Spanish'],
-    details: {
-      height: '5\'7"',
-      smoking: 'Non-smoker',
-      drinking: 'Rarely',
-      gender: 'Female',
-    },
-    verified: true,
-    isOnline: false,
-  },
-  {
-    id: '5',
-    name: 'Jennifer Brown',
+    id: '10',
+    name: 'Michael Chen',
     age: 28,
-    bio: 'Travel blogger. Always planning my next adventure ✈️',
-    occupation: 'Content Creator',
+    bio: 'Tech entrepreneur and fitness enthusiast 🏃‍♂️',
+    occupation: 'Software Developer',
     location: 'Las Vegas, NV',
-    distance: 3.7,
+    distance: 3.5,
     photos: [
-      'https://randomuser.me/api/portraits/women/32.jpg',
-      'https://randomuser.me/api/portraits/women/33.jpg',
+      'https://randomuser.me/api/portraits/men/45.jpg',
+      'https://randomuser.me/api/portraits/men/46.jpg',
     ],
-    interests: ['Travel', 'Photography', 'Writing', 'Food'],
-    languages: ['English', 'Portuguese'],
+    interests: ['Gym', 'Hiking', 'Gaming', 'Tech'],
+    languages: ['English', 'Chinese'],
     details: {
-      height: '5\'6"',
+      height: '6\'0"',
       smoking: 'Non-smoker',
       drinking: 'Socially',
-      gender: 'Female',
+      education: 'Bachelor degree',
+      gender: 'Male', // ✅ ĐÚNG
+    },
+    verified: true,
+    pronouns: 'he/him/his',
+    isOnline: true,
+  },
+  {
+    id: '11',
+    name: 'David Rodriguez',
+    age: 32,
+    bio: 'Chef and food lover. Let me cook you something special 👨‍🍳',
+    occupation: 'Head Chef',
+    location: 'Henderson, NV',
+    distance: 7.8,
+    photos: [
+      'https://randomuser.me/api/portraits/men/52.jpg',
+      'https://randomuser.me/api/portraits/men/53.jpg',
+    ],
+    interests: ['Cooking', 'Wine', 'Travel', 'Music'],
+    languages: ['English', 'Spanish'],
+    details: {
+      height: '5\'11"',
+      smoking: 'Non-smoker',
+      drinking: 'Wine enthusiast',
+      education: 'Culinary degree',
+      gender: 'Male', // ✅ ĐÚNG
     },
     verified: true,
     isOnline: true,
   },
+  {
+    id: '12',
+    name: 'James Wilson',
+    age: 30,
+    bio: 'Attorney by day, musician by night 🎸',
+    occupation: 'Attorney',
+    location: 'Las Vegas, NV',
+    distance: 2.3,
+    photos: [
+      'https://randomuser.me/api/portraits/men/58.jpg',
+      'https://randomuser.me/api/portraits/men/59.jpg',
+    ],
+    interests: ['Music', 'Reading', 'Coffee', 'Art'],
+    languages: ['English', 'French'],
+    details: {
+      height: '6\'1"',
+      smoking: 'Non-smoker',
+      drinking: 'Occasionally',
+      education: 'Law degree',
+      gender: 'Male', // ✅ ĐÚNG
+    },
+    verified: true,
+    pronouns: 'he/him/his',
+    isOnline: false,
+  },
 ];
+
 
 export const DUMMY_MATCHES: Match[] = [
   {
@@ -162,21 +196,6 @@ export const DUMMY_MATCHES: Match[] = [
       timestamp: new Date(Date.now() - 3600000),
       read: true,
     },
-  },
-  {
-    id: 'match-2',
-    user: DUMMY_USERS[2],
-    matchedAt: new Date(Date.now() - 86400000),
-  },
-  {
-    id: 'match-3',
-    user: DUMMY_USERS[3],
-    matchedAt: new Date(Date.now() - 172800000),
-  },
-  {
-    id: 'match-4',
-    user: DUMMY_USERS[4],
-    matchedAt: new Date(Date.now() - 259200000),
   },
 ];
 

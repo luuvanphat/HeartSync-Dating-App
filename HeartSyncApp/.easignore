@@ -1,0 +1,19 @@
+# Node modules 
+node_modules/
+# IDE
+.idea/
+.vscode/
+# Backup / archive / zip
+*.zip
+*.rar
+*.7z
+# Video / Audio / PDF lớn
+*.mp4
+*.mov
+*.avi
+*.pdf
+*.xlsx
+*.docx
+# Build output
+dist/
+build/

@@ -5,6 +5,8 @@ import {useStore} from '../store/useStore';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../types';
+import {useTheme} from '../theme/ThemeContext';
+import {useLanguage} from '../localization/LanguageContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 

@@ -1,3 +1,4 @@
+// ========== KEEP ALL ORIGINAL TYPES ==========
 export interface User {
   id: string;
   name: string;
@@ -75,8 +76,16 @@ export type RootStackParamList = {
   VideoCall: { matchId: string };
   UpgradePremium: undefined;
   Settings: undefined;
-  // Matches: undefined;
-  // Profile: undefined;
+  // ========== NEW: Add new routes ==========
+  BlockedUsers: undefined;
+  Language: undefined;
+  HelpCenter: undefined;
+  TermsConditions: undefined;
+  PrivacyPolicy: undefined;
+  Verification: undefined;
+  AccountInfo: undefined;
+  ChangePassword: undefined;
+  // ========================================
 };
 
 export type MainTabParamList = {
@@ -84,3 +93,13 @@ export type MainTabParamList = {
   Matches: undefined;
   Profile: undefined;
 };
+
+// ========== NEW: Add AppSettings interface ==========
+export interface AppSettings {
+  darkMode: boolean;
+  language: string;
+  notifications: boolean;
+  showOnline: boolean;
+  showDistance: boolean;
+}
+// ====================================================

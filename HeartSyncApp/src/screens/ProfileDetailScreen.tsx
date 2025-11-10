@@ -3,6 +3,8 @@ import {View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions}
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useRoute, useNavigation} from '@react-navigation/native';
 import {useStore} from '../store/useStore';
+import {useTheme} from '../theme/ThemeContext';
+import {useLanguage} from '../localization/LanguageContext';
 
 const {width, height} = Dimensions.get('window');
 

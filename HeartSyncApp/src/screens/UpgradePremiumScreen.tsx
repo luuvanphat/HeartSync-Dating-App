@@ -2,11 +2,15 @@ import React, {useState} from 'react';
 import {View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
+import {useTheme} from '../theme/ThemeContext';
+import {useLanguage} from '../localization/LanguageContext';
 
 const {width} = Dimensions.get('window');
 
 const UpgradePremiumScreen = () => {
   const navigation = useNavigation();
+  const {theme} = useTheme();
+  const {t} = useLanguage();
   const [selectedPlan, setSelectedPlan] = useState('6months');
 
   const plans = [
@@ -93,38 +97,39 @@ const UpgradePremiumScreen = () => {
   ];
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+      <View style={[styles.header, {borderBottomColor: theme.colors.border}]}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="close" size={28} color="#333" />
+          <Icon name="close" size={28} color={theme.colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Upgrade to Premium</Text>
+        <Text style={[styles.headerTitle, {color: theme.colors.text}]}>Upgrade to Premium</Text>
         <View style={{width: 28}} />
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.heroSection}>
-          <View style={styles.iconContainer}>
+          <View style={[styles.iconContainer, {backgroundColor: theme.dark ? 'rgba(255, 215, 0, 0.1)' : 'rgba(255,255,255,0.2)'}]}>
             <Icon name="star" size={60} color="#FFD700" />
           </View>
-          <Text style={styles.heroTitle}>Unlock All Features</Text>
-          <Text style={styles.heroSubtitle}>
+          <Text style={[styles.heroTitle, {color: theme.colors.text}]}>Unlock All Features</Text>
+          <Text style={[styles.heroSubtitle, {color: theme.colors.textSecondary}]}>
             Get the most out of HeartSync and find your perfect match faster
           </Text>
         </View>
 
         <View style={styles.plansSection}>
-          <Text style={styles.sectionTitle}>Choose Your Plan</Text>
+          <Text style={[styles.sectionTitle, {color: theme.colors.text}]}>Choose Your Plan</Text>
           {plans.map((plan) => (
             <TouchableOpacity
               key={plan.id}
               style={[
                 styles.planCard,
-                selectedPlan === plan.id && styles.planCardSelected,
+                {backgroundColor: theme.colors.surface, borderColor: theme.colors.border},
+                selectedPlan === plan.id && {borderColor: theme.colors.primary, backgroundColor: theme.dark ? 'rgba(0, 188, 212, 0.1)' : '#E0F7FA'},
               ]}
               onPress={() => setSelectedPlan(plan.id)}>
               {plan.popular && (
-                <View style={styles.popularBadge}>
+                <View style={[styles.popularBadge, {backgroundColor: theme.colors.error}]}>
                   <Text style={styles.popularText}>MOST POPULAR</Text>
                 </View>
               )}
@@ -133,38 +138,41 @@ const UpgradePremiumScreen = () => {
                   <View
                     style={[
                       styles.radioButton,
-                      selectedPlan === plan.id && styles.radioButtonSelected,
+                      {borderColor: theme.colors.border},
+                      selectedPlan === plan.id && {borderColor: theme.colors.primary},
                     ]}>
                     {selectedPlan === plan.id && (
-                      <View style={styles.radioInner} />
+                      <View style={[styles.radioInner, {backgroundColor: theme.colors.primary}]} />
                     )}
                   </View>
                   <View>
-                    <Text style={styles.planDuration}>{plan.duration}</Text>
-                    <Text style={styles.planPerMonth}>{plan.perMonth}</Text>
+                    <Text style={[styles.planDuration, {color: theme.colors.text}]}>{plan.duration}</Text>
+                    <Text style={[styles.planPerMonth, {color: theme.colors.textSecondary}]}>{plan.perMonth}</Text>
                   </View>
                 </View>
                 <View style={styles.planRight}>
                   {plan.savings && (
-                    <Text style={styles.savingsText}>{plan.savings}</Text>
+                    <Text style={[styles.savingsText, {color: theme.colors.success}]}>{plan.savings}</Text>
                   )}
-                  <Text style={styles.planPrice}>{plan.price}</Text>
+                  <Text style={[styles.planPrice, {color: theme.colors.primary}]}>{plan.price}</Text>
                 </View>
               </View>
             </TouchableOpacity>
           ))}
         </View>
 
-        <View style={styles.featuresSection}>
-          <Text style={styles.sectionTitle}>Premium Features</Text>
+        <View style={[styles.featuresSection, {backgroundColor: theme.colors.card}]}>
+          <Text style={[styles.sectionTitle, {color: theme.colors.text}]}>Premium Features</Text>
           {features.map((feature, index) => (
             <View key={index} style={styles.featureItem}>
-              <View style={styles.featureIcon}>
-                <Icon name={feature.icon} size={24} color="#00BCD4" />
+              <View style={[styles.featureIcon, {backgroundColor: theme.dark ? 'rgba(0, 188, 212, 0.1)' : '#E0F7FA'}]}>
+                <Icon name={feature.icon} size={24} color={theme.colors.primary} />
               </View>
               <View style={styles.featureText}>
-                <Text style={styles.featureTitle}>{feature.title}</Text>
-                <Text style={styles.featureDescription}>
+                <Text style={[styles.featureTitle, {color: theme.colors.text}]}>
+                  {feature.title}
+                </Text>
+                <Text style={[styles.featureDescription, {color: theme.colors.textSecondary}]}>
                   {feature.description}
                 </Text>
               </View>
@@ -172,287 +180,98 @@ const UpgradePremiumScreen = () => {
           ))}
         </View>
 
-        <View style={styles.guaranteeSection}>
-          <Icon name="shield-checkmark" size={40} color="#4CAF50" />
-          <Text style={styles.guaranteeTitle}>7-Day Money Back Guarantee</Text>
-          <Text style={styles.guaranteeText}>
+        <View style={[styles.guaranteeSection, {backgroundColor: theme.colors.surface}]}>
+          <Icon name="shield-checkmark" size={40} color={theme.colors.success} />
+          <Text style={[styles.guaranteeTitle, {color: theme.colors.text}]}>
+            7-Day Money Back Guarantee
+          </Text>
+          <Text style={[styles.guaranteeText, {color: theme.colors.textSecondary}]}>
             Not satisfied? Get a full refund within 7 days, no questions asked.
           </Text>
         </View>
 
-        <View style={styles.trustSection}>
+        <View style={[styles.trustSection, {backgroundColor: theme.colors.card}]}>
           <View style={styles.trustItem}>
-            <Icon name="people" size={32} color="#00BCD4" />
-            <Text style={styles.trustNumber}>2M+</Text>
-            <Text style={styles.trustLabel}>Premium Users</Text>
+            <Icon name="people" size={32} color={theme.colors.primary} />
+            <Text style={[styles.trustNumber, {color: theme.colors.text}]}>2M+</Text>
+            <Text style={[styles.trustLabel, {color: theme.colors.textSecondary}]}>Premium Users</Text>
           </View>
           <View style={styles.trustItem}>
             <Icon name="heart" size={32} color="#FF6B6B" />
-            <Text style={styles.trustNumber}>500K+</Text>
-            <Text style={styles.trustLabel}>Matches Daily</Text>
+            <Text style={[styles.trustNumber, {color: theme.colors.text}]}>500K+</Text>
+            <Text style={[styles.trustLabel, {color: theme.colors.textSecondary}]}>Matches Daily</Text>
           </View>
           <View style={styles.trustItem}>
             <Icon name="star" size={32} color="#FFD700" />
-            <Text style={styles.trustNumber}>4.8/5</Text>
-            <Text style={styles.trustLabel}>User Rating</Text>
+            <Text style={[styles.trustNumber, {color: theme.colors.text}]}>4.8/5</Text>
+            <Text style={[styles.trustLabel, {color: theme.colors.textSecondary}]}>User Rating</Text>
           </View>
         </View>
 
-        <Text style={styles.termsText}>
+        <Text style={[styles.termsText, {color: theme.colors.textSecondary}]}>
           By continuing, you agree to our Terms of Service and Privacy Policy.
           Subscription automatically renews unless auto-renew is turned off at
           least 24 hours before the end of the current period.
         </Text>
       </ScrollView>
 
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.upgradeButton}>
+      <View style={[styles.footer, {borderTopColor: theme.colors.border, backgroundColor: theme.colors.surface}]}>
+        <TouchableOpacity style={[styles.upgradeButton, {backgroundColor: theme.colors.primary}]}>
           <Text style={styles.upgradeButtonText}>
             Continue with {plans.find(p => p.id === selectedPlan)?.price}
           </Text>
         </TouchableOpacity>
-        <Text style={styles.footerText}>Cancel anytime</Text>
+        <Text style={[styles.footerText, {color: theme.colors.textSecondary}]}>
+          Cancel anytime
+        </Text>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  content: {
-    flex: 1,
-  },
-  heroSection: {
-    alignItems: 'center',
-    padding: 32,
-    backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-  },
-  iconContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  heroTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 12,
-  },
-  heroSubtitle: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    paddingHorizontal: 20,
-  },
-  plansSection: {
-    padding: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 16,
-  },
-  planCard: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#eee',
-    padding: 16,
-    marginBottom: 12,
-    position: 'relative',
-  },
-  planCardSelected: {
-    borderColor: '#00BCD4',
-    backgroundColor: '#E0F7FA',
-  },
-  popularBadge: {
-    position: 'absolute',
-    top: -10,
-    right: 20,
-    backgroundColor: '#FF6B6B',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  popularText: {
-    color: '#fff',
-    fontSize: 11,
-    fontWeight: 'bold',
-  },
-  planHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  planLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  radioButton: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#ccc',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  radioButtonSelected: {
-    borderColor: '#00BCD4',
-  },
-  radioInner: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#00BCD4',
-  },
-  planDuration: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  planPerMonth: {
-    fontSize: 14,
-    color: '#666',
-  },
-  planRight: {
-    alignItems: 'flex-end',
-  },
-  savingsText: {
-    fontSize: 12,
-    color: '#4CAF50',
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  planPrice: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#00BCD4',
-  },
-  featuresSection: {
-    padding: 20,
-    backgroundColor: '#f9f9f9',
-  },
-  featureItem: {
-    flexDirection: 'row',
-    marginBottom: 20,
-    gap: 16,
-  },
-  featureIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#E0F7FA',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  featureText: {
-    flex: 1,
-  },
-  featureTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 4,
-  },
-  featureDescription: {
-    fontSize: 14,
-    color: '#666',
-  },
-  guaranteeSection: {
-    alignItems: 'center',
-    padding: 24,
-    backgroundColor: '#fff',
-  },
-  guaranteeTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginTop: 12,
-    marginBottom: 8,
-  },
-  guaranteeText: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-  },
-  trustSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 20,
-    backgroundColor: '#f9f9f9',
-  },
-  trustItem: {
-    alignItems: 'center',
-  },
-  trustNumber: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginTop: 8,
-  },
-  trustLabel: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 4,
-  },
-  termsText: {
-    fontSize: 11,
-    color: '#999',
-    textAlign: 'center',
-    padding: 20,
-    lineHeight: 16,
-  },
-  footer: {
-    padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    backgroundColor: '#fff',
-  },
-  upgradeButton: {
-    backgroundColor: '#00BCD4',
-    borderRadius: 28,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginBottom: 12,
-    elevation: 4,
-    shadowColor: '#00BCD4',
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  upgradeButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  footerText: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-  },
+  container: {flex: 1},
+  header: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderBottomWidth: 1},
+  headerTitle: {fontSize: 18, fontWeight: 'bold'},
+  content: {flex: 1},
+  heroSection: {alignItems: 'center', padding: 32},
+  iconContainer: {width: 100, height: 100, borderRadius: 50, justifyContent: 'center', alignItems: 'center', marginBottom: 20},
+  heroTitle: {fontSize: 28, fontWeight: 'bold', marginBottom: 12},
+  heroSubtitle: {fontSize: 16, textAlign: 'center', paddingHorizontal: 20},
+  plansSection: {padding: 20},
+  sectionTitle: {fontSize: 20, fontWeight: 'bold', marginBottom: 16},
+  planCard: {borderRadius: 16, borderWidth: 2, padding: 16, marginBottom: 12, position: 'relative'},
+  planCardSelected: {},
+  popularBadge: {position: 'absolute', top: -10, right: 20, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12},
+  popularText: {color: '#fff', fontSize: 11, fontWeight: 'bold'},
+  planHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
+  planLeft: {flexDirection: 'row', alignItems: 'center', gap: 12},
+  radioButton: {width: 24, height: 24, borderRadius: 12, borderWidth: 2, justifyContent: 'center', alignItems: 'center'},
+  radioButtonSelected: {},
+  radioInner: {width: 12, height: 12, borderRadius: 6},
+  planDuration: {fontSize: 18, fontWeight: 'bold'},
+  planPerMonth: {fontSize: 14},
+  planRight: {alignItems: 'flex-end'},
+  savingsText: {fontSize: 12, fontWeight: 'bold', marginBottom: 4},
+  planPrice: {fontSize: 20, fontWeight: 'bold'},
+  featuresSection: {padding: 20},
+  featureItem: {flexDirection: 'row', marginBottom: 20, gap: 16},
+  featureIcon: {width: 48, height: 48, borderRadius: 24, justifyContent: 'center', alignItems: 'center'},
+  featureText: {flex: 1},
+  featureTitle: {fontSize: 16, fontWeight: '600', marginBottom: 4},
+  featureDescription: {fontSize: 14},
+  guaranteeSection: {alignItems: 'center', padding: 24},
+  guaranteeTitle: {fontSize: 18, fontWeight: 'bold', marginTop: 12, marginBottom: 8},
+  guaranteeText: {fontSize: 14, textAlign: 'center'},
+  trustSection: {flexDirection: 'row', justifyContent: 'space-around', padding: 20},
+  trustItem: {alignItems: 'center'},
+  trustNumber: {fontSize: 24, fontWeight: 'bold', marginTop: 8},
+  trustLabel: {fontSize: 12, marginTop: 4},
+  termsText: {fontSize: 11, textAlign: 'center', padding: 20, lineHeight: 16},
+  footer: {padding: 20, borderTopWidth: 1},
+  upgradeButton: {borderRadius: 28, paddingVertical: 16, alignItems: 'center', marginBottom: 12, elevation: 4, shadowColor: '#00BCD4', shadowOffset: {width: 0, height: 4}, shadowOpacity: 0.3, shadowRadius: 8},
+  upgradeButtonText: {color: '#fff', fontSize: 18, fontWeight: 'bold'},
+  footerText: {fontSize: 14, textAlign: 'center'},
 });
 
 export default UpgradePremiumScreen;

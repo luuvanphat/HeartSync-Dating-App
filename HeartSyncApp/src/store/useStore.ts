@@ -1,6 +1,7 @@
 import {create} from 'zustand';
-import {User, Match, Message, FilterSettings, AuthCredentials} from '../types';
+import {User, Match, Message, FilterSettings, AuthCredentials, AppSettings} from '../types';
 import {CURRENT_USER, DUMMY_USERS, DUMMY_MATCHES, DUMMY_MESSAGES} from '../data/dummyData';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AppState {
   currentUser: User | null;
@@ -12,6 +13,13 @@ interface AppState {
   filters: FilterSettings;
   hasUnsavedChanges: boolean;
   
+  // ========== NEW: Enhanced Features ==========
+  blockedUsers: string[];
+  profileCompletion: number;
+  settings: AppSettings;
+  superLikes: number;
+  // ===========================================
+  
   // Auth Actions
   login: (credentials: AuthCredentials) => Promise<boolean>;
   register: (credentials: AuthCredentials) => Promise<boolean>;
@@ -21,6 +29,14 @@ interface AppState {
   updateCurrentUser: (user: Partial<User>) => void;
   saveProfile: () => void;
   setUnsavedChanges: (value: boolean) => void;
+  
+  // ========== NEW: Enhanced User Actions ==========
+  calculateProfileCompletion: () => void;
+  blockUser: (userId: string) => void;
+  unblockUser: (userId: string) => void;
+  isUserBlocked: (userId: string) => boolean;
+  swipeSuperLike: (userId: string) => void;
+  // ===============================================
   
   // Swipe Actions
   swipeLeft: (userId: string) => void;
@@ -32,10 +48,21 @@ interface AppState {
   sendMessage: (matchId: string, text: string) => void;
   markMessagesAsRead: (matchId: string) => void;
   
+  // ========== NEW: Enhanced Chat Actions ==========
+  deleteChat: (matchId: string) => void;
+  reportUser: (userId: string, reason: string) => Promise<void>;
+  // ===============================================
+  
   // Filter Actions
   updateFilters: (filters: Partial<FilterSettings>) => void;
   applyFilters: () => void;
   clearFilters: () => void;
+  
+  // ========== NEW: Settings Actions ==========
+  updateSettings: (settings: Partial<AppSettings>) => void;
+  loadSettings: () => Promise<void>;
+  saveSettings: () => Promise<void>;
+  // ==========================================
 }
 
 // Simulated API calls
@@ -57,6 +84,18 @@ export const useStore = create<AppState>((set, get) => ({
     showNearbyWhenEmpty: true,
     languages: [],
   },
+  
+  // ========== NEW: Initialize new state ==========
+  blockedUsers: [],
+  profileCompletion: 0,
+  settings: {
+    darkMode: false,
+    language: 'en',
+    notifications: true,
+    showOnline: true,
+    showDistance: true,
+  },
+  // ==============================================
 
   // Auth Actions
   login: async (credentials) => {
@@ -70,6 +109,12 @@ export const useStore = create<AppState>((set, get) => ({
         matches: DUMMY_MATCHES,
         chats: DUMMY_MESSAGES,
       });
+      
+      // ========== NEW: Load settings and calculate profile ==========
+      get().calculateProfileCompletion();
+      await get().loadSettings();
+      // ==============================================================
+      
       return true;
     }
     return false;
@@ -93,6 +138,11 @@ export const useStore = create<AppState>((set, get) => ({
         matches: [],
         chats: {},
       });
+      
+      // ========== NEW: Calculate profile completion ==========
+      get().calculateProfileCompletion();
+      // ======================================================
+      
       return true;
     }
     return false;
@@ -107,6 +157,9 @@ export const useStore = create<AppState>((set, get) => ({
       hasUnsavedChanges: false,
       users: [...DUMMY_USERS],
       allUsers: [...DUMMY_USERS],
+      // ========== NEW: Reset blocked users ==========
+      blockedUsers: [],
+      // ==============================================
     });
   },
 
@@ -116,6 +169,10 @@ export const useStore = create<AppState>((set, get) => ({
       currentUser: state.currentUser ? {...state.currentUser, ...userData} : null,
       hasUnsavedChanges: true,
     }));
+    
+    // ========== NEW: Recalculate profile completion ==========
+    get().calculateProfileCompletion();
+    // ========================================================
   },
 
   saveProfile: () => {
@@ -126,6 +183,58 @@ export const useStore = create<AppState>((set, get) => ({
   setUnsavedChanges: (value) => {
     set({hasUnsavedChanges: value});
   },
+  
+  // ========== NEW: Profile Completion Calculation ==========
+  calculateProfileCompletion: () => {
+    const {currentUser} = get();
+    if (!currentUser) {
+      set({profileCompletion: 0});
+      return;
+    }
+
+    let completedFields = 0;
+    const totalFields = 12;
+
+    // Check each field
+    if (currentUser.name && currentUser.name.length >= 2) completedFields++;
+    if (currentUser.age >= 18) completedFields++;
+    if (currentUser.bio && currentUser.bio.length >= 50) completedFields++;
+    if (currentUser.occupation && currentUser.occupation.length >= 3) completedFields++;
+    if (currentUser.photos && currentUser.photos.length >= 3) completedFields++;
+    if (currentUser.interests && currentUser.interests.length >= 3) completedFields++;
+    if (currentUser.languages && currentUser.languages.length >= 1) completedFields++;
+    if (currentUser.details.height) completedFields++;
+    if (currentUser.details.education) completedFields++;
+    if (currentUser.details.smoking) completedFields++;
+    if (currentUser.details.drinking) completedFields++;
+    if (currentUser.pronouns) completedFields++;
+
+    const completion = Math.round((completedFields / totalFields) * 100);
+    set({profileCompletion: completion});
+  },
+
+  blockUser: (userId) => {
+    set((state) => ({
+      blockedUsers: [...state.blockedUsers, userId],
+      matches: state.matches.filter(m => m.user.id !== userId),
+      users: state.users.filter(u => u.id !== userId),
+    }));
+    // Reapply filters to remove blocked user
+    get().applyFilters();
+  },
+
+  unblockUser: (userId) => {
+    set((state) => ({
+      blockedUsers: state.blockedUsers.filter(id => id !== userId),
+    }));
+    // Reapply filters to include unblocked user
+    get().applyFilters();
+  },
+
+  isUserBlocked: (userId) => {
+    return get().blockedUsers.includes(userId);
+  },
+  // ========================================================
 
   // Swipe Actions
   swipeLeft: (userId) => {
@@ -163,8 +272,9 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   getNextUser: () => {
-    const {users} = get();
-    return users.length > 0 ? users[0] : null;
+    const {users, blockedUsers} = get(); // ========== NEW: Check blocked users ==========
+    const availableUsers = users.filter(u => !blockedUsers.includes(u.id));
+    return availableUsers.length > 0 ? availableUsers[0] : null;
   },
 
   // Chat Actions
@@ -200,6 +310,27 @@ export const useStore = create<AppState>((set, get) => ({
       },
     }));
   },
+  
+  // ========== NEW: Enhanced Chat Actions ==========
+  deleteChat: (matchId) => {
+    set((state) => {
+      const newChats = {...state.chats};
+      delete newChats[matchId];
+      
+      return {
+        matches: state.matches.filter(m => m.id !== matchId),
+        chats: newChats,
+      };
+    });
+  },
+
+  reportUser: async (userId, reason) => {
+    await simulateApiCall(500);
+    // In real app: send report to server
+    console.log(`User ${userId} reported for: ${reason}`);
+    // You can add more logic here like showing success message
+  },
+  // ===============================================
 
   // Filter Actions
   updateFilters: (newFilters) => {
@@ -209,16 +340,19 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   applyFilters: () => {
-    const {filters, allUsers} = get();
+    const {filters, allUsers, blockedUsers} = get();
     
-    // Apply filters to users list
     let filteredUsers = [...allUsers];
     
-    // Gender filter
+    // Filter out blocked users
+    filteredUsers = filteredUsers.filter(u => !blockedUsers.includes(u.id));
+    
+    // Gender filter - ĐÃ FIX
     if (filters.gender.length > 0) {
-      filteredUsers = filteredUsers.filter(user => 
-        filters.gender.includes(user.details.gender || '')
-      );
+      filteredUsers = filteredUsers.filter(user => {
+        // Kiểm tra user.details.gender có trong filters.gender không
+        return user.details.gender && filters.gender.includes(user.details.gender);
+      });
     }
     
     // Age filter
@@ -240,7 +374,26 @@ export const useStore = create<AppState>((set, get) => ({
     
     set({users: filteredUsers});
   },
-
+  superLikes: 5, // Users get 5 super likes per day
+  
+  swipeSuperLike: (userId) => {
+    const {superLikes} = get();
+    if (superLikes <= 0) {
+      // Show alert that no super likes left
+      return;
+    }
+    
+    const user = get().users.find((u) => u.id === userId);
+    if (user) {
+      // Super like has 80% match rate
+      const isMatch = Math.random() > 0.2;
+      if (isMatch) {
+        get().addMatch(user);
+      }
+      get().swipeLeft(userId);
+      set({superLikes: superLikes - 1});
+    }
+  },
   clearFilters: () => {
     set({
       filters: {
@@ -250,7 +403,36 @@ export const useStore = create<AppState>((set, get) => ({
         showNearbyWhenEmpty: true,
         languages: [],
       },
-      users: [...get().allUsers],
     });
+    get().applyFilters(); // ========== NEW: Apply filters after clearing ==========
   },
+  
+  // ========== NEW: Settings Actions ==========
+  updateSettings: (newSettings) => {
+    set((state) => ({
+      settings: {...state.settings, ...newSettings},
+    }));
+    get().saveSettings();
+  },
+
+  loadSettings: async () => {
+    try {
+      const savedSettings = await AsyncStorage.getItem('appSettings');
+      if (savedSettings) {
+        set({settings: JSON.parse(savedSettings)});
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error);
+    }
+  },
+
+  saveSettings: async () => {
+    try {
+      const {settings} = get();
+      await AsyncStorage.setItem('appSettings', JSON.stringify(settings));
+    } catch (error) {
+      console.error('Error saving settings:', error);
+    }
+  },
+  // ==========================================
 }));
