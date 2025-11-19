@@ -10,6 +10,7 @@ import MatchModal from '../components/MatchModal';
 import DrawerMenu from '../components/DrawerMenu';
 import {useTheme} from '../theme/ThemeContext';
 import {useLanguage} from '../localization/LanguageContext';
+import SafeContainer from '../components/SafeContainer';
 
 const {width} = Dimensions.get('window');
 
@@ -91,7 +92,7 @@ const SwipeScreen = () => {
 
   if (!currentUser) {
     return (
-      <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+      <SafeContainer style={[styles.container, {backgroundColor: theme.colors.background}]}>
         <View style={[styles.header, {backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.border}]}>
           <TouchableOpacity onPress={() => setDrawerOpen(!drawerOpen)}>
             <Icon name="menu" size={28} color={theme.colors.text} />
@@ -121,12 +122,12 @@ const SwipeScreen = () => {
         </View>
 
         <DrawerMenu visible={drawerOpen} onClose={() => setDrawerOpen(false)} />
-      </View>
+      </SafeContainer>
     );
   }
 
   return (
-    <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+    <SafeContainer style={[styles.container, {backgroundColor: theme.colors.background}]}>
       <View style={[styles.header, {backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.border}]}>
         <TouchableOpacity onPress={() => setDrawerOpen(true)}>
           <Icon name="menu" size={28} color={theme.colors.text} />
@@ -203,7 +204,7 @@ const SwipeScreen = () => {
       />
 
       <DrawerMenu visible={drawerOpen} onClose={() => setDrawerOpen(false)} />
-    </View>
+    </SafeContainer>
   );
 };
 

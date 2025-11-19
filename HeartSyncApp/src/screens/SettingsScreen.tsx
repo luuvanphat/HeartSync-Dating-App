@@ -7,6 +7,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../types';
 import {useTheme} from '../theme/ThemeContext';
 import {useLanguage} from '../localization/LanguageContext';
+import SafeContainer from '../components/SafeContainer';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -65,7 +66,8 @@ const SettingsScreen = () => {
   };
 
   return (
-    <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+    <SafeContainer>
+      <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
       <View style={[styles.header, {borderBottomColor: theme.colors.border}]}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrow-back" size={24} color={theme.colors.text} />
@@ -273,6 +275,8 @@ const SettingsScreen = () => {
         </View>
       </ScrollView>
     </View>
+    </SafeContainer>
+    
   );
 };
 

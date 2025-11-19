@@ -6,6 +6,7 @@ import {useNavigation} from '@react-navigation/native';
 import Slider from '@react-native-community/slider';
 import {useTheme} from '../theme/ThemeContext';
 import {useLanguage} from '../localization/LanguageContext';
+import SafeContainer from '../components/SafeContainer';
 
 const FiltersScreen = () => {
   const navigation = useNavigation();
@@ -91,7 +92,7 @@ const FiltersScreen = () => {
   };
 
   return (
-    <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+    <SafeContainer style={[styles.container, {backgroundColor: theme.colors.background}]}>
       <View style={[styles.header, {borderBottomColor: theme.colors.border}]}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="close" size={28} color={theme.colors.text} />
@@ -230,7 +231,7 @@ const FiltersScreen = () => {
           <Text style={styles.applyButtonText}>Apply filters</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeContainer>
   );
 };
 

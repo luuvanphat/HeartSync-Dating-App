@@ -7,6 +7,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList, Message} from '../types';
 import {useTheme} from '../theme/ThemeContext';
 import {useLanguage} from '../localization/LanguageContext';
+import SafeContainer from '../components/SafeContainer';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -147,7 +148,8 @@ const ChatDetailScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView
+    <SafeContainer>
+      <KeyboardAvoidingView
       style={[styles.container, {backgroundColor: theme.colors.background}]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}>
@@ -267,6 +269,8 @@ const ChatDetailScreen = () => {
         </View>
       )}
     </KeyboardAvoidingView>
+    </SafeContainer>
+    
   );
 };
 

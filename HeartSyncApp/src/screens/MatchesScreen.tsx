@@ -7,6 +7,8 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList, Match} from '../types';
 import {useTheme} from '../theme/ThemeContext';
 import {useLanguage} from '../localization/LanguageContext';
+import SafeContainer from '../components/SafeContainer';
+import EmptyState from '../components/EmptyState';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -77,7 +79,8 @@ const MatchesScreen = () => {
   };
 
   return (
-    <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+    <SafeContainer>
+      <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
       <View style={[styles.header, {borderBottomColor: theme.colors.border}]}>
         <TouchableOpacity onPress={() => setMenuOpen(!menuOpen)}>
           <Icon name="menu" size={28} color={theme.colors.text} />
@@ -121,12 +124,11 @@ const MatchesScreen = () => {
             contentContainerStyle={styles.matchesList}
           />
         ) : (
-          <View style={styles.emptyState}>
-            <Icon name="heart-dislike" size={48} color={theme.colors.disabled} />
-            <Text style={[styles.emptyText, {color: theme.colors.textSecondary}]}>
-              {searchQuery ? 'No matches found' : t('matches.noMatches')}
-            </Text>
-          </View>
+<EmptyState
+  icon="heart-dislike-outline"
+  title={searchQuery ? 'Không tìm thấy' : 'Chưa có người phù hợp'}
+  description={searchQuery ? 'Thử tìm kiếm khác' : 'Hãy tiếp tục vuốt để tìm người phù hợp!'}
+/>
         )}
       </View>
 
@@ -156,6 +158,8 @@ const MatchesScreen = () => {
         )}
       </View>
     </View>
+    </SafeContainer>
+    
   );
 };
 

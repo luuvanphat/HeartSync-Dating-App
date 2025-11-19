@@ -7,6 +7,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../types';
 import {useTheme} from '../theme/ThemeContext';
 import {useLanguage} from '../localization/LanguageContext';
+import SafeContainer from '../components/SafeContainer';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -192,7 +193,7 @@ const EditProfileScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeContainer style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrow-back" size={24} color="#333" />
@@ -362,7 +363,7 @@ const EditProfileScreen = () => {
           </TouchableOpacity>
         </View>
       )}
-    </View>
+    </SafeContainer>
   );
 };
 

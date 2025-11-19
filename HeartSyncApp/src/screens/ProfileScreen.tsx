@@ -7,6 +7,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../types';
 import {useTheme} from '../theme/ThemeContext';
 import {useLanguage} from '../localization/LanguageContext';
+import SafeContainer from '../components/SafeContainer';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -26,7 +27,8 @@ const ProfileScreen = () => {
   }
 
   return (
-    <ScrollView style={[styles.container, {backgroundColor: theme.colors.background}]}>
+    <SafeContainer>
+      <ScrollView style={[styles.container, {backgroundColor: theme.colors.background}]}>
       <View style={[styles.header, {backgroundColor: theme.colors.surface}]}>
         <TouchableOpacity>
           <Icon name="menu" size={28} color={theme.colors.text} />
@@ -135,6 +137,8 @@ const ProfileScreen = () => {
         ))}
       </View>
     </ScrollView>
+    </SafeContainer>
+    
   );
 };
 
